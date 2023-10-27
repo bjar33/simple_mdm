@@ -5,20 +5,13 @@ const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const db = new sqlite3.Database(':memory:'); // This creates an in-memory SQLite database.
 
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static(__dirname)); // Serve static files from the root directory
+
 // Database Initialization
 db.serialize(() => {
     db.run("CREATE TABLE devices (id TEXT PRIMARY KEY, name TEXT, model TEXT)");
-});
-
-app.use(bodyParser.json());
-
-app.get('/', (req, res) => {
-    res.send('MDM Server is running');
-});
-
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
 });
 // Endpoint to register a device
 app.post('/register', (req, res) => {
@@ -35,6 +28,7 @@ app.post('/register', (req, res) => {
         res.send('Device registered successfully');
     });
 });
+
 // Endpoint to list all registered devices
 app.get('/devices', (req, res) => {
     db.all("SELECT * FROM devices", [], (err, rows) => {
@@ -44,12 +38,10 @@ app.get('/devices', (req, res) => {
         res.json(rows);
     });
 });
-const express = require('express');
-const app = express();
+
 const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
 
-// Serve static files from the root directory
-app.use(express.static(__dirname));
-
-// Your other routes and database setup come after...
 
