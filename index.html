@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple MDM</title>
 </head>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
 <body>
     <h1>Simple MDM</h1>
 
     <!-- Registration Form -->
     <h2>Register Device</h2>
     <form id="registerForm">
-        ID: <input type="text" id="deviceId"><br><br>
-        Name: <input type="text" id="deviceName"><br><br>
-        Model: <input type="text" id="deviceModel"><br><br>
+        ID: <input type="text" id="deviceId" required><br><br>
+        Name: <input type="text" id="deviceName" required minlength="3" maxlength="50"><br><br>
+        Model: <input type="text" id="deviceModel" required minlength="2" maxlength="30"><br><br>        
         <input type="submit" value="Register">
     </form>
 

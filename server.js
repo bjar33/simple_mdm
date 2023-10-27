@@ -28,6 +28,10 @@ app.post('/register', (req, res) => {
         res.send('Device registered successfully');
     });
 });
+if (!id || !name || !model) {
+    alert("All fields are mandatory and must meet the specified length criteria.");
+    return;
+}
 
 // Endpoint to list all registered devices
 app.get('/devices', (req, res) => {
@@ -43,5 +47,17 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
+app.post('/register', (req, res) => {
+    const { id, name, model } = req.body;
+
+    // Validate data
+    if (!id || !name || !model || name.length < 3 || name.length > 50 || model.length < 2 || model.length > 30) {
+        return res.status(400).send('Invalid device information');
+    }
+
+    // ... rest of your route logic
+});
+
+
 
 
