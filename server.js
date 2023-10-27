@@ -4,14 +4,75 @@ const sqlite3 = require('sqlite3').verbose();
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const bcrypt = require('bcryptjs');
 
 const app = express();
 const db = new sqlite3.Database(':memory:');
-
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+      db.get('SELECT * FROM users WHERE username = ?', [username], function(err, user) {
+        if (err) { return done(err); }
+        if (!user) {
+          return done(null, false, { message: 'Incorrect username.' });
+        }
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) throw err;
+          if (isMatch) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+        });
+      });
+    }
+  ));
+  
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+  
+  passport.deserializeUser((id, done) => {
+    db.get('SELECT * FROM users WHERE id = ?', [id], (err, user) => {
+      done(err, user);
+    });
+  });
+  
 app.use(bodyParser.json());
 app.use(express.static('public'));
+db.run("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT UNIQUE, password TEXT)");
 
 // **New Code: Start Session Management**
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+      db.get('SELECT * FROM users WHERE username = ?', [username], function(err, user) {
+        if (err) { return done(err); }
+        if (!user) {
+          return done(null, false, { message: 'Incorrect username.' });
+        }
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) throw err;
+          if (isMatch) {
+            return done(null, user);
+          } else {
+            return done(null, false, { message: 'Incorrect password.' });
+          }
+        });
+      });
+    }
+  ));
+  
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+  
+  passport.deserializeUser((id, done) => {
+    db.get('SELECT * FROM users WHERE id = ?', [id], (err, user) => {
+      done(err, user);
+    });
+  });  
 app.use(express.session({ secret: 'some-secret-key', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
