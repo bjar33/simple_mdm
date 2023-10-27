@@ -9,7 +9,7 @@ const app = express();
 const db = new sqlite3.Database(':memory:');
 
 app.use(bodyParser.json());
-app.use(express.static(__dirname));
+app.use(express.static('public'));
 
 // **New Code: Start Session Management**
 app.use(express.session({ secret: 'some-secret-key', resave: false, saveUninitialized: false }));
@@ -55,6 +55,9 @@ app.post('/register-user', (req, res) => {
         res.status(200).send("User registered successfully!");
     });
 });
+if (!id || !name || !model) {
+    return res.status(400).send('All fields (id, name, model) are required.');
+}
 
 app.post('/login', passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
     res.redirect('/');
